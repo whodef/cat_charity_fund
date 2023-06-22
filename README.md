@@ -5,9 +5,12 @@
 [![SQLAlchemy](https://img.shields.io/badge/-SQLAlchemy-464646?style=flat&logo=SQLAlchemy&logoColor=ffffff&color=informational)](https://www.sqlalchemy.org/)
 
 
+<img src="https://github.com/whodef/cat_charity_fund/assets/7266512/80b6078f-b95a-491d-b45b-5db1669836eb" alt="Pretty Cats" width="600px" height="350px"/>
+
+
 ## Описание
 
-"QRKot" 
+Фонд собирает пожертвования на различные целевые проекты: на медицинское обслуживание нуждающихся хвостатых, на обустройство кошачьей колонии в подвале, на корм оставшимся без попечения кошкам — на любые цели, связанные с поддержкой кошачьей популяции.
 
 ## Запуск проекта
 
