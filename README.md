@@ -5,7 +5,7 @@
 [![SQLAlchemy](https://img.shields.io/badge/-SQLAlchemy-464646?style=flat&logo=SQLAlchemy&logoColor=ffffff&color=informational)](https://www.sqlalchemy.org/)
 
 
-<img src="https://github.com/whodef/cat_charity_fund/assets/7266512/80b6078f-b95a-491d-b45b-5db1669836eb" alt="Pretty Cats" width="600px" height="350px"/>
+<img src="https://github.com/whodef/cat_charity_fund/assets/7266512/80b6078f-b95a-491d-b45b-5db1669836eb" alt="Pretty Cats" style="max-width: 100%;"/>
 
 
 ## Описание
