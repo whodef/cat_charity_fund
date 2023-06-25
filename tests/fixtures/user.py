@@ -53,3 +53,4 @@ def superuser_client():
     app.dependency_overrides[current_superuser] = lambda: superuser
     with TestClient(app) as client:
         yield client
+        
