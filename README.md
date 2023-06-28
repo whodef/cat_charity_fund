@@ -38,11 +38,12 @@
    
 4. Создайте в корне проекта файл .env с настройками
    ```bash
-   APP_TITLE=<Название приложения>
-   DESCRIPTION=<Описание проекта>
-   DATABASE_URL=<Настройки подключения к БД, например: sqlite+aiosqlite:///./development.db>
-   FIRST_SUPERUSER_EMAIL = <Ваш e-mail>
-   FIRST_SUPERUSER_PASSWORD = <Ваш пароль>
+   APP_TITLE=QRKot
+   DESCRIPTION=API проекта QRKot.
+   VERSION=1.0.8
+   DATABASE_URL=sqlite+aiosqlite:///./development.db
+   FIRST_SUPERUSER_EMAIL=awedev@awe.dev
+   FIRST_SUPERUSER_PASSWORD=AAA-DEADLINE-SOON-AAA
    ```
    
 5. Примените миграции
