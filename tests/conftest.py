@@ -8,7 +8,6 @@ from fastapi.testclient import TestClient
 from fastapi_users import models
 from fastapi_users.password import PasswordHelper
 from mixer.backend.sqlalchemy import Mixer as _mixer
-from app.main import app  # noqa
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
