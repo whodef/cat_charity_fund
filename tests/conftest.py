@@ -12,6 +12,7 @@ from mixer.backend.sqlalchemy import Mixer as _mixer
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+from app.main import app  # noqa
 from app.schemas.user import UserCreate
 from app.core.user import get_user_db, get_user_manager
 from aiogoogle import Aiogoogle  # noqa
