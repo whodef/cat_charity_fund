@@ -1,4 +1,4 @@
-import os
+import os  # noqa
 import contextlib
 from datetime import datetime
 
@@ -14,8 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from app.schemas.user import UserCreate
 from app.core.user import get_user_db, get_user_manager
-from aiogoogle import Aiogoogle
-from aiogoogle.auth.creds import ServiceAccountCreds
+from aiogoogle import Aiogoogle  # noqa
+from aiogoogle.auth.creds import ServiceAccountCreds  # noqa
 
 try:
     from app.core.db import Base, get_async_session
