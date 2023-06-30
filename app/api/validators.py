@@ -10,7 +10,7 @@ async def project_name_is_busy(
     session: db.AsyncSession
 ) -> None:
     """
-    Проверяет, свободно ли указанное название.
+    Проверяет свободно ли указанное название.
 
     ### Args:
         name (str):
@@ -38,7 +38,7 @@ async def has_investition(
     session: db.AsyncSession
 ) -> models.CharityProject:
     """
-    Проверяет, были ли уже инвестиции в указанный проект.
+    Проверяет были ли уже инвестиции в указанный проект.
 
     ### Args:
     `id` проверяемого благотворительного проекта.
