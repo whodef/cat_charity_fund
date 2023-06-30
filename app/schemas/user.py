@@ -1,14 +1,22 @@
-from fastapi_users import models
+from pydantic import BaseModel
+from fastapi_users.db import BaseUserDB
+from fastapi_users.models import BaseUserCreate, BaseUserUpdate
 
 
-class User(models.BaseUser):
+class User(BaseModel):
     """
     Схема с базовыми полями модели пользователя (за исключением пароля).
     """
     pass
 
 
-class UserCreate(models.BaseUserCreate):
+class UserDB(User, BaseUserDB):
+    """
+    Схема, описывающая модель User в БД."""
+    pass
+
+
+class UserCreate(BaseUserCreate):
     """
     Схема для регистрации пользователя;
 
@@ -18,7 +26,7 @@ class UserCreate(models.BaseUserCreate):
     pass
 
 
-class UserUpdate(models.BaseUserUpdate):
+class UserUpdate(BaseUserUpdate):
     """
     Схема для обновления объекта пользователя.
 
@@ -26,10 +34,4 @@ class UserUpdate(models.BaseUserUpdate):
     Все поля опциональны. Если запрос передаёт обычный пользователь
     (а не SuperUser), то поля is_active, is_superuser, is_verified исключаются.
     """
-    pass
-
-
-class UserDB(User, models.BaseUserDB):
-    """
-    Схема, описывающая модель User в БД."""
     pass

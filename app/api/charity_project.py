@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends
 from pydantic import PositiveInt
-
 from app import schemas
 from app.api import validators
 from app.core import db, user
