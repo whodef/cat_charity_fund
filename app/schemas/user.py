@@ -1,22 +1,20 @@
-from pydantic import BaseModel
-from fastapi_users.db import BaseUserDB
-from fastapi_users.models import BaseUserCreate, BaseUserUpdate
+from fastapi_users import models
 
 
-class User(BaseModel):
+class User(models.BaseUser):
     """
     Схема с базовыми полями модели пользователя (за исключением пароля).
     """
     pass
 
 
-class UserDB(User, BaseUserDB):
+class UserDB(User, models.BaseUserDB):
     """
     Схема, описывающая модель User в БД."""
     pass
 
 
-class UserCreate(BaseUserCreate):
+class UserCreate(models.BaseUserCreate):
     """
     Схема для регистрации пользователя;
 
@@ -26,7 +24,7 @@ class UserCreate(BaseUserCreate):
     pass
 
 
-class UserUpdate(BaseUserUpdate):
+class UserUpdate(models.BaseUserUpdate):
     """
     Схема для обновления объекта пользователя.
 

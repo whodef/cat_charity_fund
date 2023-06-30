@@ -113,10 +113,10 @@ async def allow_update_project(
     if project.fully_invested:
         raise exc.HTTPExceptionBadRequest(detail=c.ERR_PROJECT_CLOSED)
 
-    if update_data.full_amount and update_data.full_amount < project.invested_amount:
-        raise exc.HTTPExceptionBadRequest(detail=c.ERR_FULL_AMOUNT)
-
     if update_data.name and not update_data.name == project.name:
         await project_name_is_busy(update_data.name, session)
+
+    if update_data.full_amount and update_data.full_amount < project.invested_amount:
+        raise exc.HTTPExceptionBadRequest(detail=c.ERR_FULL_AMOUNT)
 
     return project
