@@ -53,7 +53,7 @@ except (NameError, ImportError):
 from app.core.google_client import get_service
 from pathlib import Path
 
-BASE_DIR = Path('.').absolute()
+BASE_DIR = Path('').absolute()
 APP_DIR = BASE_DIR / 'app'
 
 
