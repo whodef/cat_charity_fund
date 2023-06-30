@@ -1,3 +1,4 @@
+import os
 import contextlib
 from datetime import datetime
 
@@ -13,6 +14,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from app.schemas.user import UserCreate
 from app.core.user import get_user_db, get_user_manager
+from aiogoogle import Aiogoogle
+from aiogoogle.auth.creds import ServiceAccountCreds
 
 try:
     from app.core.db import Base, get_async_session
@@ -38,7 +41,15 @@ except (NameError, ImportError):
         'Проверьте и поправьте: он должен быть доступен в модуле `app.main`.',
     )
 
+try:
+    from app.core import google_client
+except (NameError, ImportError):
+    raise AssertionError(
+        'Не обнаружен файл `google_client`. '
+        'Проверьте и поправьте: он должн быть доступен в модуле `app.core`.',
+    )
 
+from app.core.google_client import get_service
 from pathlib import Path
 
 BASE_DIR = Path('.').absolute()
