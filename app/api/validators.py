@@ -1,122 +1,83 @@
-from app import models, schemas
-from app.core import db
-from app.crud import charity_projects_crud
+import datetime
+from http import HTTPStatus
+
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.crud.charity_project import charity_project_crud
+from app.models.charity_project import CharityProject
+from app.schemas.charity_project import CharityProjectUpdate
 from app.services import constants as c
-from app.services import exceptions as exc
 
 
-async def project_name_is_busy(
-    name: str,
-    session: db.AsyncSession
+async def check_name_duplicate(
+        project_name: str, session: AsyncSession
 ) -> None:
     """
-    Проверяет свободно ли указанное название.
-
-    ### Args:
-        name (str):
-            Проверяемое название.
-
-        session (db.AsyncSession):
-            Объект сессии с БД.
-
-    ### Raises:
-        HTTPException:
-            Указанное название уже занято.
+    Проверяется, доступно ли указанное имя проекта для использования.
     """
-    if await charity_projects_crud.get_by_field(
-        required_field='name',
-        value=name,
-        session=session
-    ):
-        raise exc.HTTPExceptionBadRequest(
-            detail=c.ERR_NAME_EXIST
-        )
+    if await charity_project_crud.get_object_id_by_name(
+            project_name, CharityProject, session):
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=c.PROJECT_NAME_ALREADY_EXISTS)
 
 
-async def has_investition(
-    project_id: int,
-    session: db.AsyncSession
-) -> models.CharityProject:
+async def check_charity_project_exists(
+        project_id: int,
+        session: AsyncSession) -> CharityProject:
     """
-    Проверяет были ли уже инвестиции в указанный проект.
-
-    ### Args:
-    `id` проверяемого благотворительного проекта.
-
-        project_id (int)
-
-    Объект сессии с БД.
-
-        session (db.AsyncSession):
-
-
-    ### Raises:
-        HTTPException:
-            Проект с указанным `id` не найден.
-
-        HTTPException:
-            В указанный проект уже сделаны инвестиции.
-
-    ### Returns:
-    Проверенный благотворительный проект.
-
-        models.CharityProject
+    Проверяет, существует ли благотворительный проект с заданным ID.
     """
-    project = await charity_projects_crud.get(
-        obj_id=project_id,
-        session=session
-    )
-    if project is None:
-        raise exc.HTTPExceptionBadRequest(detail=c.ERR_NOT_FOUND)
-    if project.invested_amount > 0:
-        raise exc.HTTPExceptionUnprocessableEntity(
-            detail=c.ERR_HAS_INVEST % project.invested_amount
-        )
-
-    return project
+    charity_project = await charity_project_crud.get(project_id, session)
+    if not charity_project:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=c.PROJECT_NOT_FOUND)
+    return charity_project
 
 
-async def allow_update_project(
-    project_id: int,
-    session: db.AsyncSession,
-    update_data: schemas.CharityProjectUpdate
-) -> models.CharityProject:
+async def check_charity_project_invested_no_money(
+        project_id: int, session: AsyncSession) -> None:
     """
-    Проверяет, можно ли изменять указанный благотворительный проект.
-
-    Проект должен быть открыт.
-    Новая сумма требуемых инвестиций не может быть меньше уже имеющихся.
-
-    ### Args:
-        update_data (Union[None, schemas.CharityProjectUpdate], optional):
-            Обновляемые данные.
-            Defaults to None.
-
-    ### Raises:
-        HTTPException:
-            Проект с указанным `id` не найден.
-
-        HTTPException:
-            Проект уже закрыт.
-
-        HTTPException:
-            Введённая сумма превышает уже инвестированную!
-
-    ### Returns:
-        models.CharityProject:
-            Проверенный благотворительный проект.
+    Выполняет проверку, были ли произведены инвестиции в указанный проект.
     """
-    project = await charity_projects_crud.get(obj_id=project_id, session=session)
-    if project is None:
-        raise exc.HTTPExceptionBadRequest(detail=c.ERR_NOT_FOUND)
+    charity_project = await charity_project_crud.get(project_id, session)
+    if charity_project.invested_amount:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=c.DELETION_NOT_ALLOWED)
 
-    if project.fully_invested:
-        raise exc.HTTPExceptionBadRequest(detail=c.ERR_PROJECT_CLOSED)
 
-    if update_data.name and not update_data.name == project.name:
-        await project_name_is_busy(update_data.name, session)
+async def check_charity_project_fully_invested(
+        charity_project: CharityProject) -> None:
+    """
+    Функция выполняет проверку на то, был ли проект полностью проинвестирован.
+    """
+    if charity_project.fully_invested:
+        raise HTTPException(
+            status_code=400,
+            detail=c.PATCH_NOT_ALLOWED)
 
-    if update_data.full_amount and update_data.full_amount < project.invested_amount:
-        raise exc.HTTPExceptionBadRequest(detail=c.ERR_FULL_AMOUNT)
 
-    return project
+async def check_new_full_amount(
+        charity_project: CharityProject,
+        obj_in: CharityProjectUpdate) -> CharityProject:
+    """
+    Функция проверяет, что новая сумма пожертвований для проекта не
+    меньше уже внесенной суммы.
+
+    Если новая целевая сумма уже достигнута, статус проекта меняется
+    на fully_invested и присваивается close_date.
+    """
+
+    if charity_project.invested_amount > obj_in.full_amount:
+        raise HTTPException(
+            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+            detail=c.INVALID_FULL_AMOUNT)
+
+    if charity_project.invested_amount == obj_in.full_amount:
+        charity_project.fully_invested = True
+        charity_project.close_date = datetime.datetime.now()
+
+    return charity_project

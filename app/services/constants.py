@@ -1,71 +1,30 @@
 
-# For core.users
+# Error messages
 
-JWT_LIFE_TIME = 60 * 60
+PROJECT_NAME_ALREADY_EXISTS = 'Проект с таким именем уже существует!'
 
+PROJECT_NOT_FOUND = 'Проект не найден'
 
-# For datetime.isoformat
+DELETION_NOT_ALLOWED = 'В проект были внесены средства, не подлежит удалению!'
 
-TIMESPEC = 'seconds'
+PATCH_NOT_ALLOWED = 'Закрытый проект нельзя редактировать!'
 
-
-# For endpoints `api.charity_projects`
-
-GET_ALL_CHARITY_PROJECTS = 'Просмотреть все благотворительные проекты'
-
-CREATE_CHARITY_PROJECTS = 'Создать новый благотворительный проект'
-
-UPDATE_CHARITY_PROJECT = 'Изменить благотворительный проект'
-
-DELETE_CHARITY_PROJECTS = 'Удалить благотворительный проект'
+INVALID_FULL_AMOUNT = 'Нельзя установить новую целевую сумму меньше уже внесенной'
 
 
-# For endpoints `api.donations`
+# User settings
 
-GET_ALL_DONATIONS = 'Просмотреть все пожертвования'
+TOKEN_URL = 'auth/jwt/login'
 
-GET_MY_DONATIONS = 'Просмотреть все мои пожертвования'
+PASSWORD_GE_THREE = 'Password should be at least 3 characters'
 
-CREATE_DONATION = 'Добавить пожертвование'
-
-
-# For endpoints `api.google`
-
-GET_REPORT_TO_GOOGLE = 'Добавить данные из БД в Google-таблицу'
+PASSWORD_NE_EMAIL = 'Password should not contain e-mail'
 
 
-# For googlesheets
+# Model constants
 
-TABLE_NAME = 'Отчеты по проекту QRkot'
+DEFAULT_INVESTED_AMOUNT = 0
 
-SHEET_NAME_RATING_SPEED_CLOSING = 'Рейтинг проектов по скорости закрытия'
+CHARITY_PROJECT_NAME_MAX = 100
 
-
-# For Error Messages
-
-ERR_NO_DELETE_USER = 'Удаление пользователей запрещено!'
-
-ERR_LEN_PASSWORD = 'Password should be at least 3 characters'
-
-ERR_EMAIL_IN_PASSWORD = 'Пароль содержит Ваш e-mail!'
-
-ERR_NAME_EXIST = 'Проект с таким именем уже существует!'
-
-ERR_FULL_AMOUNT = 'Введённая сумма превышает уже инвестированную!'
-
-ERR_HAS_INVEST = 'Удаление запрещено! В проект уже пожертвовано %s'
-
-ERR_PROJECT_CLOSED = 'Закрытый проект нельзя редактировать!'
-
-ERR_NOT_FOUND = 'Объект с таким id не найден.'
-
-ERR_NO_TABLE_FIELD = 'Указанное поле отсутствует в таблице!'
-
-ERR_BASE_INTEGRITY = 'Попытка записи некорректных данных в БД!'
-
-ERR_BASE_ANY = 'Ошибка при соединении с БД!'
-
-
-# Other Messages
-
-USER_IS_SIGNED = 'Пользователь уже зарегистрирован'
+CHARITY_PROJECT_MIN = 1

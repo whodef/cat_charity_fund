@@ -1,8 +1,7 @@
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable
 
-from app.core import db
+from app.core.db import Base
 
 
-class UserTable(SQLAlchemyBaseUserTable, db.Base):
-    """Таблица `users`."""
+class User(SQLAlchemyBaseUserTable[int], Base):
     pass

@@ -1,160 +1,61 @@
-from typing import Union
+from typing import Optional, Union
 
-import fastapi
-import fastapi_users as fa_users
+from fastapi import Depends, Request
+from fastapi_users import (
+    BaseUserManager, FastAPIUsers, IntegerIDMixin,
+    InvalidPasswordException
+)
+from fastapi_users.authentication import (
+    AuthenticationBackend, BearerTransport, JWTStrategy
+)
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
-import fastapi_users.authentication as auth
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app import models, schemas
-from app.core import config, db
+from app.core.config import settings
+from app.core.db import get_async_session
+from app.models.user import User
+from app.schemas.user import UserCreate
 from app.services import constants as c
 
 
-async def get_user_db(
-    session: db.AsyncSession = fastapi.Depends(db.get_async_session)
-):
-    """
-    Подключения таблицы `user` в БД.
+async def get_user_db(session: AsyncSession = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)
 
-    ### Args:
-     Объект сессии с БД.
-
-        session (db.AsyncSession, optional):
-            Defaults to fa.Depends(db.get_async_session)
-
-    ### Yields:
-    При обращении создаёт новое подключение к таблице `user` в БД.
-    """
-    yield SQLAlchemyUserDatabase(schemas.UserDB, session, models.UserTable)
+bearer_transport = BearerTransport(tokenUrl=c.TOKEN_URL)
 
 
-def get_jwt_strategy() -> auth.JWTStrategy:
-    """
-    Получает настройки использования `JWT`.
-
-    ### Returns:
-    Объект с настройками `JWT`.
-
-        auth.JWTStrategy
-    """
-    return auth.JWTStrategy(
-        secret=config.settings.secret,
-        lifetime_seconds=c.JWT_LIFE_TIME
-    )
+def get_jwt_strategy() -> JWTStrategy:
+    return JWTStrategy(secret=settings.secret, lifetime_seconds=3600)
 
 
-bearer_transport = auth.BearerTransport(tokenUrl='auth/jwt/login')
-
-auth_backend = auth.AuthenticationBackend(
+auth_backend = AuthenticationBackend(
     name='jwt',
     transport=bearer_transport,
-    get_strategy=get_jwt_strategy,
-)
+    get_strategy=get_jwt_strategy)
 
 
-class UserManager(
-    fa_users.BaseUserManager[schemas.UserCreate, schemas.UserDB]
-):
-    """
-    Управление и проверки различных действий пользователя.
-
-    ### Attrs:
-    Схема обрабатываемых данных.
-
-        user_db_model
-
-    Ключ для кодирования токена сброса пароля.
-
-        reset_password_token_secret
-
-    Ключ кодирования токена проверки.
-
-        verification_token_secret
-    """
-    user_db_model = schemas.UserDB
-    reset_password_token_secret = config.settings.secret
-    verification_token_secret = config.settings.secret
-
+class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     async def validate_password(
-        self,
-        password: str,
-        user: Union[schemas.UserCreate, schemas.UserDB],
-    ) -> None:
-        """
-        Проверяет пароль пользователя.
-
-        ### Args:
-        Введённый пароль.
-
-            password (str)
-
-        Схема данных.
-
-            user Union[schemas.UserCreate, schemas.UserDB]
-
-        ### Raises:
-        Слишком короткий пароль.
-
-            fastapi_users.InvalidPasswordException
-
-        Пароль содержит e-mail пользователя.
-
-            fastapi_users.InvalidPasswordException
-
-        """
+            self, password: str, user: Union[UserCreate, User]) -> None:
         if len(password) < 3:
-            raise fa_users.InvalidPasswordException(
-                reason=c.ERR_LEN_PASSWORD
-            )
+            raise InvalidPasswordException(
+                reason=c.PASSWORD_GE_THREE)
+
         if user.email in password:
-            raise fa_users.InvalidPasswordException(
-                reason=c.ERR_EMAIL_IN_PASSWORD
-            )
+            raise InvalidPasswordException(
+                reason=c.PASSWORD_NE_EMAIL)
 
     async def on_after_register(
-            self,
-            user: schemas.UserDB,
-            request: Union[None, fastapi.Request] = None
-    ):
-        """
-        После регистрации пользователя.
-
-        ### Args:
-        Схема данных пользователя.
-
-            user (schemas.UserDB)
-
-        Объект запроса.
-
-            request (Union[None, fastapi.Request]):
-                Default is None
-        """
-        print(c.USER_IS_SIGNED)
+            self, user: User, request: Optional[Request] = None):
+        print(f'Пользователь {user.email} зарегистрирован.')
 
 
-async def get_user_manager(user_db=fastapi.Depends(get_user_db)):
-    """
-    Генератор объектов `UserManager`.
-
-    ### Args:
-    Подключение к таблице `user` в БД.
-
-        user_db (_type_, optional):
-            Defaults to fastapi.Depends(get_user_db)
-
-    ### Yields:
-    При обращении создаёт новый объект управления пользователями.
-    """
+async def get_user_manager(user_db=Depends(get_user_db)):
     yield UserManager(user_db)
 
-fastapi_users = fa_users.FastAPIUsers(
-    get_user_manager=get_user_manager,
-    auth_backends=[auth_backend],
-    user_model=schemas.User,
-    user_create_model=schemas.UserCreate,
-    user_update_model=schemas.UserUpdate,
-    user_db_model=schemas.UserDB
-)
+fastapi_users = FastAPIUsers[User, int](
+    get_user_manager,
+    [auth_backend])
 
 current_user = fastapi_users.current_user(active=True)
 current_superuser = fastapi_users.current_user(active=True, superuser=True)

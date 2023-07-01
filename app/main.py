@@ -1,19 +1,19 @@
 from fastapi import FastAPI
-from app.api import main_router
-from app.core.config import settings as s
+
+from app.api.routers import main_router
+from app.core.config import settings
 
 app = FastAPI(
-    title=s.app_title,
-    description=s.description,
-    version=s.version,
-)
+    title=settings.app_title,
+    description=settings.app_description)
 
 app.include_router(main_router)
 
 
 @app.get('/')
 def read_root() -> dict:
-    """Корневой endpoint, который приветствует пользователя.
+    """
+    Корневой endpoint, который приветствует пользователя.
 
     ### Gets:
     Получает приветственное сообщение.
