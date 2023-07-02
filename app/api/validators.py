@@ -56,7 +56,7 @@ async def check_charity_project_fully_invested(
     """
     if charity_project.fully_invested:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail=c.PATCH_NOT_ALLOWED)
 
 

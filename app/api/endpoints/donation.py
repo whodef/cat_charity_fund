@@ -41,7 +41,8 @@ async def get_all_donations(
     response_model_exclude_none=True,
     response_model_exclude={
         'user_id', 'fully_invested',
-        'invested_amount', 'close_date'}
+        'invested_amount', 'close_date'
+    }
 )
 async def create_new_donation(
         new_donation: DonationCreate,

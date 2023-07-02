@@ -40,12 +40,10 @@ class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
     async def validate_password(
             self, password: str, user: Union[UserCreate, User]) -> None:
         if len(password) < 3:
-            raise InvalidPasswordException(
-                reason=c.PASSWORD_GE_THREE)
+            raise InvalidPasswordException(reason=c.PASSWORD_GE_THREE)
 
         if user.email in password:
-            raise InvalidPasswordException(
-                reason=c.PASSWORD_NE_EMAIL)
+            raise InvalidPasswordException(reason=c.PASSWORD_NE_EMAIL)
 
     async def on_after_register(
             self, user: User, request: Optional[Request] = None):
@@ -57,7 +55,8 @@ async def get_user_manager(user_db=Depends(get_user_db)):
 
 fastapi_users = FastAPIUsers[User, int](
     get_user_manager,
-    [auth_backend])
+    [auth_backend]
+)
 
 current_user = fastapi_users.current_user(active=True)
 current_superuser = fastapi_users.current_user(active=True, superuser=True)
