@@ -21,12 +21,15 @@ def invest_money_into_project(
             changed_sources.append(source_set_fully_invested(source))
             needs_investing -= surplus
             target.invested_amount += surplus
-        else:
+
+        if surplus > needs_investing:
             source.invested_amount += needs_investing
-            needs_investing = 0
+        else:
             changed_sources.append(source_set_fully_invested(source))
+        needs_investing = 0
 
     changed_sources.append(source_set_fully_invested(target))
+    return changed_sources
 
 
 def source_set_fully_invested(
