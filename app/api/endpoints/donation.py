@@ -76,6 +76,7 @@ async def create_new_donation(
     if sources:
         changed_sources = invest_money_into_project(
             target=new_donation, sources=sources)
+
         if changed_sources:
             session.add_all(changed_sources)
 

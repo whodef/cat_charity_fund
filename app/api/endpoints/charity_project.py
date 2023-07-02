@@ -65,9 +65,9 @@ async def create_new_charity_project(
     sources = await find_sources(session, Donation)
     if sources:
         changed_sources = invest_money_into_project(
-            target=new_project,
-            sources=sources
+            target=new_project, sources=sources
         )
+
         if changed_sources:
             session.add_all(changed_sources)
 
