@@ -68,10 +68,17 @@ async def create_new_donation(
 
     sources = await find_sources(session, CharityProject)
 
+    # if sources:
+    #     changed_sources = invest_money_into_project(
+    #         target=new_donation, sources=sources)
+    #     session.add(*changed_sources)
+
     if sources:
         changed_sources = invest_money_into_project(
             target=new_donation, sources=sources)
-        session.add(*changed_sources)
+        if changed_sources:
+            session.add_all(changed_sources)
+
     await session.commit()
     await session.refresh(new_donation)
 

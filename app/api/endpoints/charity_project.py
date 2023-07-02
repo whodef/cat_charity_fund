@@ -68,9 +68,8 @@ async def create_new_charity_project(
             target=new_project,
             sources=sources
         )
-        session.add(*changed_sources)
-    await session.commit()
-    await session.refresh(new_project)
+        if changed_sources:
+            session.add_all(changed_sources)
 
     return new_project
 
