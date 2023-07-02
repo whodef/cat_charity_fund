@@ -1,4 +1,9 @@
 
+# JWT
+
+JWT_LIFETIME_SECONDS = 3600
+
+
 # User settings
 
 TOKEN_URL = 'auth/jwt/login'

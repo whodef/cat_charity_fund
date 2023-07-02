@@ -6,7 +6,7 @@ class Settings(BaseSettings):
 
     app_title: str = 'QRKot'
     app_description: str = 'API проекта QRKot'
-    database_url: str = 'sqlite+aiosqlite:///./fastapi.db'
+    database_url: str = 'sqlite+aiosqlite:///./qrkot.db'
     secret: str = 'AAA-DEADLINE-SOON-AAA'
 
     class Config:
